@@ -11,32 +11,54 @@ const nextButton = document.querySelector('[data-js="button-next"]');
 const pagination = document.querySelector('[data-js="pagination"]');
 
 // States
-const maxPage = 1;
-const page = 1;
+let page = 1;
+let cardData = await fetchCharacters();
+let maxPage = cardData.info.pages;
 const searchQuery = "";
 
-const cardData = await fetchCharacters();
+pagination.textContent = page + " / " + maxPage;
 handleCharacters(cardData.results);
 
 nextButton.addEventListener("click", async () => {
-  console.log("click");
   try {
-    const data = await fetchCharacters(cardData.info.next);
-    console.log(data);
+    if (page < maxPage) {
+      page++;
+      cardData = await fetchCharacters(page);
+      pagination.textContent = page + " / " + maxPage;
+      handleCharacters(cardData.results);
+    } else {
+      console.error("no next page available");
+    }
   } catch (error) {
     console.log(error);
   }
 });
 
-async function fetchCharacters(
-  url = "https://rickandmortyapi.com/api/character"
-) {
+prevButton.addEventListener("click", async () => {
+  try {
+    if (page > 1) {
+      page--;
+      cardData = await fetchCharacters(page);
+      pagination.textContent = page + " / " + maxPage;
+      handleCharacters(cardData.results);
+    } else {
+      console.error("no previous page available");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+async function fetchCharacters(url = page) {
   try {
     cardContainer.innerHTML = "";
-    const response = await fetch(url);
+    const response = await fetch(
+      "https://rickandmortyapi.com/api/character?page=" + url
+    );
 
     if (response.ok) {
       const data = await response.json();
+      console.log(data);
 
       return data;
     } else {
