@@ -16,32 +16,47 @@ const page = 1;
 const searchQuery = "";
 
 const cardData = await fetchCharacters();
+handleCharacters(cardData.results);
 
-cardData.forEach((character) => {
-  const characterCard = createCharacterCard(
-    character.name,
-    character.status,
-    character.type,
-    character.episode.length,
-    character.image
-  );
-
-  cardContainer.append(characterCard);
+nextButton.addEventListener("click", async () => {
+  console.log("click");
+  try {
+    const data = await fetchCharacters(cardData.info.next);
+    console.log(data);
+  } catch (error) {
+    console.log(error);
+  }
 });
 
-async function fetchCharacters() {
+async function fetchCharacters(
+  url = "https://rickandmortyapi.com/api/character"
+) {
   try {
     cardContainer.innerHTML = "";
-    const response = await fetch("https://rickandmortyapi.com/api/character");
+    const response = await fetch(url);
 
     if (response.ok) {
       const data = await response.json();
 
-      return data.results;
+      return data;
     } else {
       console.error("response is not ok!");
     }
   } catch (error) {
     console.log(error);
   }
+}
+
+function handleCharacters(characters) {
+  characters.forEach((character) => {
+    const characterCard = createCharacterCard(
+      character.name,
+      character.status,
+      character.type,
+      character.episode.length,
+      character.image
+    );
+
+    cardContainer.append(characterCard);
+  });
 }
