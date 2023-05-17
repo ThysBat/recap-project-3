@@ -23,7 +23,7 @@ nextButton.addEventListener("click", async () => {
   try {
     if (page < maxPage) {
       page++;
-      cardData = await fetchCharacters(page);
+      cardData = await fetchCharacters();
       pagination.textContent = page + " / " + maxPage;
       handleCharacters(cardData.results);
     } else {
@@ -38,7 +38,7 @@ prevButton.addEventListener("click", async () => {
   try {
     if (page > 1) {
       page--;
-      cardData = await fetchCharacters(page);
+      cardData = await fetchCharacters();
       pagination.textContent = page + " / " + maxPage;
       handleCharacters(cardData.results);
     } else {
@@ -49,18 +49,15 @@ prevButton.addEventListener("click", async () => {
   }
 });
 
-async function fetchCharacters(url = page) {
+async function fetchCharacters() {
   try {
     cardContainer.innerHTML = "";
     const response = await fetch(
-      "https://rickandmortyapi.com/api/character?page=" + url
+      "https://rickandmortyapi.com/api/character?page=" + page
     );
 
     if (response.ok) {
-      const data = await response.json();
-      console.log(data);
-
-      return data;
+      return await response.json();
     } else {
       console.error("response is not ok!");
     }
